@@ -1,0 +1,17 @@
+{
+  "status": "pilot_assumptions_not_final_research_protocol",
+  "data_root": "D:/UAV-SAR/datasets",
+  "scenario": "1",
+  "crop_cells": 16,
+  "block_pixels": 2,
+  "prior_mode": "condition_on_crop",
+  "deadline_s": 600.0,
+  "observation_s": 5.0,
+  "uavs": [
+    {"name": "UAV-1", "speed_mps": 8.0, "fly_w": 180.0, "observe_w": 200.0, "budget_wh": 30.0, "detector_imgsz": 320},
+    {"name": "UAV-2", "speed_mps": 10.0, "fly_w": 220.0, "observe_w": 240.0, "budget_wh": 38.0, "detector_imgsz": 480},
+    {"name": "UAV-3", "speed_mps": 12.0, "fly_w": 260.0, "observe_w": 280.0, "budget_wh": 46.0, "detector_imgsz": 640}
+  ],
+  "detector": {"initial_weights": "yolov8n.pt", "epochs": 30, "imgsz": 640, "batch": 16, "seed": 2026, "confidence": 0.25, "match_iou": 0.5, "nms_iou": 0.7, "calibration_split": "val"},
+  "optimizer": {"population": 100, "generations": 200, "seeds": [1, 2, 3, 4, 5], "neighbors": 20, "neighbor_mating": 0.9, "sbx_eta": 15, "mutation_eta": 20, "log_every": 10, "hv_reference": [1.1, 1.1]}
+}

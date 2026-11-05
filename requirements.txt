@@ -1,0 +1,6 @@
+pymoo==0.6.1.5
+numpy==2.2.6
+matplotlib>=3.8,<4
+requests>=2.31,<3
+ultralytics==8.3.228
+pyproj>=3.6,<4

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.pytest_cache/
+external/
+data/
+results/
+*.pt
+*.part
+Ultralytics/
+datasets/
+migration/
