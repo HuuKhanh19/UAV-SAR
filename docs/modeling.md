@@ -97,8 +97,8 @@ C6–C7 áp dụng **riêng từng UAV**, tính cả quan sát và đường v�
 Gọi $`\mathcal F`$ là tập thỏa C1–C8. Bài toán hai mục tiêu cực tiểu tương đương là:
 
 ```math
-\boxed{\underset{(x,y,z,h)\in\mathcal F}{\operatorname{minimize}}
-\left(-P_{detect}(x),\ E_{total}(x,y)\right)}.
+\min_{(x,y,z,h)\in\mathcal F}
+\left(-P_{\mathrm{detect}}(x),\ E_{\mathrm{total}}(x,y)\right).
 ```
 
 Đây là một phát biểu đa mục tiêu với biến nguyên hỗn hợp và biểu thức tuyến tính khi đầu vào cố định. Code không giải hệ này bằng MILP; nó dùng biểu diễn hành trình tương đương $`R_k=(b_k,j_{k,1},\ldots,j_{k,n_k},b_k)`$.
@@ -109,13 +109,14 @@ A trội B khi $`P_A\ge P_B`$, $`E_A\le E_B`$ và có ít nhất một bất đ�
 
 ### 2.5. Mục tiêu dùng trong code
 
-Đặt $`U=\sum_j\pi_j\max_kq_{kj}`$ và $`B_\Sigma=\sum_kB_k`$. Pymoo cực tiểu:
+Đặt $`U=\sum_{j\in V}\pi_j\max_{1\le k\le K}q_{kj}`$ và $`B_\Sigma=\sum_{k=1}^K B_k`$. Pymoo cực tiểu hai mục tiêu đã chuẩn hóa:
 
 ```math
-F_1=1-P/U,\qquad F_2=E/B_\Sigma.
+F_1(x)=1-\frac{P_{\mathrm{detect}}(x)}{U},\qquad
+F_2(x,y)=\frac{E_{\mathrm{total}}(x,y)}{B_\Sigma}.
 ```
 
-U bỏ qua pin/deadline nên chỉ là cận trên. Với instance hiện tại, U≈0,819126184 và B_Sigma=114 Wh. Đổi thang giữ nguyên Pareto dominance. Nếu chỉ chuẩn hóa cùng miền/hình học, P và U cùng chia cho m_Omega nên F_1 không đổi; đây không phải cải tiến tìm kiếm.
+$`U`$ bỏ qua pin/deadline nên chỉ là cận trên. Với instance hiện tại, $`U\approx0{,}819126184`$ và $`B_\Sigma=114\ \mathrm{Wh}`$. Đổi thang giữ nguyên Pareto dominance. Nếu chỉ chuẩn hóa cùng miền/hình học, $`P`$ và $`U`$ cùng chia cho $`m_\Omega`$ nên $`F_1`$ không đổi; đây không phải cải tiến tìm kiếm.
 
 ## 3. Dữ liệu và cấu hình hiện tại
 
@@ -138,17 +139,21 @@ T=600 s, tau=5 s, ba UAV chung căn cứ (0,0). **Tốc độ, công suất, pin
 ## 4. Pipeline end-to-end
 
 ```mermaid
+---
+config:
+  htmlLabels: false
+---
 flowchart TD
-    A["SAREnv scenario 1: bản đồ và heatmap"] --> C["Tạo 256 ô và chuẩn hóa tổng π = 1"]
-    B["POP → huấn luyện detector → đo q cho 3 UAV"] --> D["Instance chung: tọa độ, π, q, UAV, pin, deadline"]
+    A["SAREnv scenario 1<br/>Bản đồ và heatmap"] --> C["Tạo 256 ô<br/>Chuẩn hóa tổng π = 1"]
+    B["POP + YOLOv8n<br/>Huấn luyện detector<br/>Đo q cho 3 UAV"] --> D["Instance chung<br/>Tọa độ, π, q<br/>UAV, pin, deadline"]
     C --> D
-    D --> E["Tạo 100 kế hoạch ban đầu theo seed"]
-    E --> F["NSGA-II: tiến hóa bằng Pareto và crowding"]
-    E --> G["MOEA/D: tiến hóa theo các mức ưu tiên"]
-    F --> H["Mỗi kế hoạch: giải mã → kiểm tra tài nguyên → tính P và E"]
+    D --> E["100 kế hoạch ban đầu<br/>Khởi tạo theo seed"]
+    E --> F["NSGA-II<br/>Pareto + crowding"]
+    E --> G["MOEA/D<br/>Trọng số + hàng xóm"]
+    F --> H["Đánh giá kế hoạch<br/>Giải mã, kiểm tra<br/>pin và deadline<br/>Tính P và E"]
     G --> H
-    H --> I["Lưu archive các nghiệm không trội đã tìm được"]
-    I --> J["Xuất hành trình, Pareto, HV, IGD+ và bảng kết quả"]
+    H --> I["Lưu archive<br/>Các nghiệm không trội"]
+    I --> J["Xuất hành trình<br/>Pareto, HV, IGD+<br/>Bảng kết quả"]
 ```
 
 | Bước | Module/hàm | Đầu ra |
