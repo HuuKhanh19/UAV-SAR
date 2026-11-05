@@ -7,7 +7,7 @@ from .io import read_json
 
 def main():
     parser = argparse.ArgumentParser(description="Multi-UAV SAR: POP + SAREnv, NSGA-II and MOEA/D")
-    parser.add_argument("command", choices=["download", "prepare", "train", "calibrate", "instance", "run", "pipeline"])
+    parser.add_argument("command", choices=["download", "prepare", "train", "calibrate", "instance", "run", "pipeline", "diagnose"])
     parser.add_argument("--config", default="configs/pilot.json")
     parser.add_argument("--device", default="0", help="GPU index, or cpu")
     parser.add_argument("--epochs", type=int)
@@ -15,11 +15,16 @@ def main():
     parser.add_argument("--weights", help="Checkpoint with training_manifest.json")
     parser.add_argument("--calibration", default="data/calibration.json")
     parser.add_argument("--instance", default="data/instance_mission.json")
-    parser.add_argument("--output", help="Output file (calibrate/instance) or new run directory (run/pipeline)")
+    parser.add_argument("--output", help="Output file (calibrate/instance) or new directory (run/pipeline/diagnose)")
     parser.add_argument("--algorithms", nargs="+", choices=["nsga2", "moead"], default=["nsga2", "moead"])
     parser.add_argument("--seeds", nargs="+", type=int)
     parser.add_argument("--population", type=int)
     parser.add_argument("--generations", type=int)
+    parser.add_argument("--results", default="results/baseline_mission_100pct", help="Frozen baseline run to diagnose")
+    parser.add_argument("--extended-results", help="Completed runs with the same settings and seeds but a larger evaluation budget")
+    parser.add_argument("--mutation-repeats", type=int, default=4, help="Independent PM trials per saved final individual")
+    parser.add_argument("--probe-seed", type=int, default=2026)
+    parser.add_argument("--skip-random", action="store_true", help="Skip the equal-evaluation stratified random-search control")
     args = parser.parse_args()
     config = read_json(args.config)
     # Set this before importing Ultralytics, including direct python invocations.
@@ -46,6 +51,10 @@ def main():
         from .optimize import run
         run(config, args.instance, args.output or f"results/run_{time.strftime('%Y%m%d_%H%M%S')}",
             args.algorithms, args.seeds, args.population, args.generations)
+    elif args.command == "diagnose":
+        from .diagnostics import diagnose
+        diagnose(args.results, args.output or f"results/diagnostics_{time.strftime('%Y%m%d_%H%M%S')}",
+                 args.extended_results, args.mutation_repeats, args.probe_seed, not args.skip_random)
     else:
         from .datasets import fetch
         from .detector import prepare, train, calibrate

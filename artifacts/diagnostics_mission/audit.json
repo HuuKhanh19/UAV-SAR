@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "independent_method": "math.dist and math.fsum from frozen JSON, per-UAV deadline/battery and global uniqueness",
+  "offline_probe_plans": 51,
+  "extended_archive_plans": 2272,
+  "random_archive_plans": 331,
+  "total_plans": 2654,
+  "max_absolute_error": {
+    "probability": 1.1102230246251565e-16,
+    "energy_wh": 2.842170943040401e-14,
+    "time_s": 2.2737367544323206e-13,
+    "distance_m": 1.8189894035458565e-12
+  },
+  "original_inputs_unchanged": true,
+  "all_offline_energy_caps_respected": true,
+  "original_cells_preserved_per_uav": true
+}

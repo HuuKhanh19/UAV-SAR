@@ -73,6 +73,23 @@ Pipeline lưu calibration và instance trong `results/pipeline_<timestamp>_input
 
 ## Đọc kết quả
 
+### Chẩn đoán để thiết kế thuật toán
+
+Lệnh `diagnose` phân tích archive, quần thể đầu/cuối và lịch sử của một lượt baseline đã hoàn tất; đầu ra nằm trong thư mục mới. Nó kiểm tra đa dạng hành trình, hiệu lực đột biến PM, sử dụng pin/thời gian, tiết kiệm từ 2-opt và khả năng chèn thêm ô trong mức năng lượng của kế hoạch gốc. Có đối chứng tìm kiếm ngẫu nhiên với cùng ngân sách đánh giá và khởi tạo theo seed.
+
+```powershell
+# Phân tích 5 seed hiện có.
+& $py -u run.py diagnose --results results/baseline_mission_100pct --output results/diagnostics_new
+
+# Thử ngân sách gấp 5, rồi đối chiếu. Chọn tên output mới nếu đã chạy.
+& $py -u run.py run --instance results/baseline_mission_100pct/instance.json --generations 1000 --seeds 1 2 3 4 5 --output results/baseline_budget_new
+& $py -u run.py diagnose --results results/baseline_mission_100pct --extended-results results/baseline_budget_new --output results/diagnostics_budget_new
+```
+
+Khi so ngân sách, công cụ yêu cầu cùng instance, cặp thuật toán/seed và cấu hình; chỉ tăng số thế hệ. Lịch sử HV và xác suất tại ngân sách cũ phải được tái lập. `--mutation-repeats` mặc định 4 lần/cá thể cuối; `--probe-seed` mặc định 2026; `--skip-random` bỏ đối chứng ngẫu nhiên.
+
+Đọc [chẩn đoán scenario hiện tại và hướng thí nghiệm tiếp theo](docs/baseline-diagnostics.md). **2-opt, chèn ô và greedy là phép thử ngoại tuyến có thêm tính toán**; kết quả của chúng giúp tìm điểm nghẽn, chưa chứng minh một thuật toán mới tốt hơn với cùng ngân sách.
+
 Trong mỗi thư mục chạy:
 
 | File | Nội dung |

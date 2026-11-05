@@ -78,3 +78,7 @@ Lượt chạy miền nhiệm vụ 100% cũng sửa tọa độ raster, nên hà
 Archive được cập nhật từ **mọi nghiệm được đánh giá** cho cả hai thuật toán, kể cả offspring không được giữ trong quần thể. Bỏ các điểm trùng mục tiêu, giữ một hành trình đại diện. HV dùng cùng điểm tham chiếu `r=(1.1, 1.1)` trong không gian chuẩn hóa. IGD+ dùng front không trội gộp từ toàn bộ archive của các lượt hoàn tất trong cùng thư mục; tập này phụ thuộc các lần chạy được gộp, không phải front tối ưu thật. Xem [định nghĩa chỉ số pymoo](https://pymoo.org/misc/indicators.html).
 
 Không kết luận hơn/kém từ lượt smoke test hoặc một seed. Cần thêm detector được huấn luyện đủ, nhiều scenario, nhiều seed, phân tích thống kê, nhạy cảm theo q và mô hình năng lượng trước khi dùng kết quả cho paper.
+
+## Chẩn đoán mở rộng trên scenario hiện tại
+
+Xem [baseline-diagnostics.md](baseline-diagnostics.md) và lệnh `run.py diagnose`. Phân tích dùng instance đã đóng băng, đối chiếu 20.000/100.000 đánh giá, đối chứng tìm kiếm ngẫu nhiên, đa dạng quần thể, đột biến PM và các phép thử 2-opt/chèn ô ngoại tuyến. So ngân sách phải tái lập phần lịch sử chung; không so trực tiếp IGD+ lấy từ hai tập tham chiếu gộp khác nhau. Các phép thử ngoại tuyến không được tính như thuật toán thắng baseline ở cùng ngân sách.
