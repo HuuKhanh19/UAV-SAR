@@ -16,71 +16,75 @@ Mô hình hiện tại lập kế hoạch offline trên mặt phẳng 2D, bay th
 
 ### 2.1. Tập chỉ số, tham số và biến quyết định
 
-Đặt miền nhiệm vụ là Omega, tập ô $V=\{1,\ldots,N\}$. Với UAV k, đặt $V_k^+=V\cup\{b_k\}$ và $A_k=\{(u,v):u,v\in V_k^+,u\ne v\}$.
+Đặt miền nhiệm vụ là Omega, tập ô $`V=\{1,\ldots,N\}`$. Với UAV k, đặt $`V_k^+=V\cup\{b_k\}`$ và $`A_k=\{(u,v):u,v\in V_k^+,u\ne v\}`$.
 
 | Ký hiệu | Ý nghĩa |
 | --- | --- |
-| $b_k,p_j,p_{b_k}$ | Căn cứ UAV k; tọa độ tâm ô j và căn cứ, m |
-| $\pi_j$ | Xác suất nạn nhân ở ô j, có điều kiện nạn nhân trong Omega |
-| $q_{kj}$ | Xác suất UAV k phát hiện đúng khi quan sát ô j có nạn nhân |
-| $d_{uv}^k=\|p_u-p_v\|_2$ | Khoảng cách giữa hai nút, m |
-| $v_k$ | Tốc độ bay, m/s |
-| $P_k^{fly},P_k^{obs}$ | Công suất pha bay và tổng công suất pha quan sát, W |
-| $B_k,T,\tau$ | Ngân sách pin Wh; deadline s; thời gian quan sát một ô s |
-| $x_{kj}\in\{0,1\}$ | UAV k thực hiện quan sát ô j |
-| $y_{uv}^k\in\{0,1\}$ | UAV k sử dụng cung bay (u,v) |
-| $z_k\in\{0,1\}$ | UAV k tham gia nhiệm vụ |
-| $h_{kj}\ge0$ | Biến thứ tự phụ trợ để loại chu trình con |
+| $`b_k,p_j,p_{b_k}`$ | Căn cứ UAV k; tọa độ tâm ô j và căn cứ, m |
+| $`\pi_j`$ | Xác suất nạn nhân ở ô j, có điều kiện nạn nhân trong Omega |
+| $`q_{kj}`$ | Xác suất UAV k phát hiện đúng khi quan sát ô j có nạn nhân |
+| $`d_{uv}^k=\lVert p_u-p_v\rVert_2`$ | Khoảng cách giữa hai nút, m |
+| $`v_k`$ | Tốc độ bay, m/s |
+| $`P_k^{fly},P_k^{obs}`$ | Công suất pha bay và tổng công suất pha quan sát, W |
+| $`B_k,T,\tau`$ | Ngân sách pin Wh; deadline s; thời gian quan sát một ô s |
+| $`x_{kj}\in\{0,1\}`$ | UAV k thực hiện quan sát ô j |
+| $`y_{uv}^k\in\{0,1\}`$ | UAV k sử dụng cung bay (u,v) |
+| $`z_k\in\{0,1\}`$ | UAV k tham gia nhiệm vụ |
+| $`h_{kj}\ge0`$ | Biến thứ tự phụ trợ để loại chu trình con |
 
-Các tham số xác suất thỏa $\pi_j\ge0$, $\sum_j\pi_j=1$, $0\le q_{kj}\le1$. Với trọng số heatmap nguồn w_j và xác suất miền m_Omega:
-$$
+Các tham số xác suất thỏa $`\pi_j\ge0`$, $`\sum_j\pi_j=1`$, $`0\le q_{kj}\le1`$. Với trọng số heatmap nguồn w_j và xác suất miền m_Omega:
+
+```math
 m_\Omega=\sum_{j\in V}w_j,\qquad \pi_j=\frac{w_j}{m_\Omega}.
-$$
+```
 
-Đây là phân bố có điều kiện nạn nhân trong miền, giữ tỷ lệ cao–thấp của heatmap. Xác suất quy về nguồn là $P_{source}=m_\Omega P_{detect}$; metadata giữ `raw_crop_mass=m_Omega`.
+Đây là phân bố có điều kiện nạn nhân trong miền, giữ tỷ lệ cao–thấp của heatmap. Xác suất quy về nguồn là $`P_{source}=m_\Omega P_{detect}`$; metadata giữ `raw_crop_mass=m_Omega`.
 
 ### 2.2. Hai hàm mục tiêu
 
-Gọi $n_k=\sum_jx_{kj}$ là số ô và $D_k=\sum_{(u,v)\in A_k}d_{uv}^ky_{uv}^k$ là tổng quãng đường gồm đường về. Khi đó:
-$$
+Gọi $`n_k=\sum_jx_{kj}`$ là số ô và $`D_k=\sum_{(u,v)\in A_k}d_{uv}^ky_{uv}^k`$ là tổng quãng đường gồm đường về. Khi đó:
+
+```math
 T_k=D_k/v_k+\tau n_k,\qquad
 E_k=\frac{P_k^{fly}D_k/v_k+P_k^{obs}\tau n_k}{3600}.
-$$
+```
 
 Hệ số 3600 đổi J sang Wh. Công suất quan sát đã gồm duy trì bay/treo; hai pha không tính trùng.
 
 **Tối đa xác suất phát hiện:**
-$$
+
+```math
 \max f_1(x)=P_{detect}(x)=\sum_{j\in V}\pi_j\sum_{k=1}^Kx_{kj}q_{kj}.
-$$
+```
 
 **Tối thiểu năng lượng toàn kế hoạch:**
-$$
+
+```math
 \min f_2(x,y)=E_{total}(x,y)=\sum_{k=1}^KE_k.
-$$
+```
 
 Công thức P dùng xác suất toàn phần cho vị trí của một nạn nhân và quy tắc mỗi ô tối đa một lượt, không cần giả định các ô độc lập. Với phân công x cố định, thay thứ tự không đổi P nếu vẫn hoàn thành mọi lượt trước T; thứ tự vẫn ảnh hưởng năng lượng và tính khả thi.
 
 ### 2.3. Hệ ràng buộc
 
-$$
+```math
 \begin{aligned}
-&\sum_kx_{kj}\le1 &&\forall j\in V &&\text{(C1)}\\
+&\sum_kx_{kj}\le1 &&\forall j\in V &&\text{(C1)}\\[0.25em]
 &\sum_{j\in V}y_{b_kj}^k=\sum_{j\in V}y_{jb_k}^k=z_k
-&&\forall k &&\text{(C2)}\\
+&&\forall k &&\text{(C2)}\\[0.25em]
 &\sum_{u\in V_k^+\setminus\{j\}}y_{uj}^k
 =\sum_{v\in V_k^+\setminus\{j\}}y_{jv}^k=x_{kj}
-&&\forall k,j &&\text{(C3)}\\
-&x_{kj}\le z_k &&\forall k,j &&\text{(C4)}\\
-&x_{kj}\le h_{kj}\le Nx_{kj} &&\forall k,j &&\text{(C5a)}\\
+&&\forall k,j &&\text{(C3)}\\[0.25em]
+&x_{kj}\le z_k &&\forall k,j &&\text{(C4)}\\[0.25em]
+&x_{kj}\le h_{kj}\le Nx_{kj} &&\forall k,j &&\text{(C5a)}\\[0.25em]
 &h_{kj}\ge h_{ki}+1-(N+1)(1-y_{ij}^k)
-&&\forall k,\ i,j\in V,\ i\ne j &&\text{(C5b)}\\
-&D_k/v_k+\tau n_k\le T &&\forall k &&\text{(C6)}\\
+&&\forall k,\ i,j\in V,\ i\ne j &&\text{(C5b)}\\[0.25em]
+&D_k/v_k+\tau n_k\le T &&\forall k &&\text{(C6)}\\[0.25em]
 &\left(P_k^{fly}D_k/v_k+P_k^{obs}\tau n_k\right)/3600\le B_k
-&&\forall k &&\text{(C7)}\\
+&&\forall k &&\text{(C7)}\\[0.25em]
 &x_{kj},y_{uv}^k,z_k\in\{0,1\} &&\forall k,j,(u,v)\in A_k &&\text{(C8)}.
 \end{aligned}
-$$
+```
 
 C1 tránh quan sát trùng; C2 buộc xuất phát/quay về; C3 liên kết phân công với cung vào/ra; C4 cho phép UAV nghỉ. C5 loại các chu trình giữa ô không nối căn cứ, nên kết hợp C2–C3 tạo hành trình liên thông.
 
@@ -90,24 +94,26 @@ C6–C7 áp dụng **riêng từng UAV**, tính cả quan sát và đường v�
 
 ### 2.4. Dạng tối ưu hoàn chỉnh và Pareto
 
-Gọi $\mathcal F$ là tập thỏa C1–C8. Bài toán hai mục tiêu cực tiểu tương đương là:
-$$
+Gọi $`\mathcal F`$ là tập thỏa C1–C8. Bài toán hai mục tiêu cực tiểu tương đương là:
+
+```math
 \boxed{\underset{(x,y,z,h)\in\mathcal F}{\operatorname{minimize}}
 \left(-P_{detect}(x),\ E_{total}(x,y)\right)}.
-$$
+```
 
-Đây là một phát biểu đa mục tiêu với biến nguyên hỗn hợp và biểu thức tuyến tính khi đầu vào cố định. Code không giải hệ này bằng MILP; nó dùng biểu diễn hành trình tương đương $R_k=(b_k,j_{k,1},\ldots,j_{k,n_k},b_k)$.
+Đây là một phát biểu đa mục tiêu với biến nguyên hỗn hợp và biểu thức tuyến tính khi đầu vào cố định. Code không giải hệ này bằng MILP; nó dùng biểu diễn hành trình tương đương $`R_k=(b_k,j_{k,1},\ldots,j_{k,n_k},b_k)`$.
 
 Từ một hành trình suy ra x, y và h bằng phân công, các cung nối tiếp và thứ tự ô. UAV không tham gia có danh sách rỗng, thời gian và năng lượng bằng 0. Phương án cả đội nghỉ hợp lệ vì chưa có ngưỡng P tối thiểu.
 
-A trội B khi $P_A\ge P_B$, $E_A\le E_B$ và có ít nhất một bất đẳng thức nghiêm ngặt. Mục tiêu của hai EA là xấp xỉ tập không trội, không bảo đảm tìm được biên tối ưu thật.
+A trội B khi $`P_A\ge P_B`$, $`E_A\le E_B`$ và có ít nhất một bất đẳng thức nghiêm ngặt. Mục tiêu của hai EA là xấp xỉ tập không trội, không bảo đảm tìm được biên tối ưu thật.
 
 ### 2.5. Mục tiêu dùng trong code
 
-Đặt $U=\sum_j\pi_j\max_kq_{kj}$ và $B_\Sigma=\sum_kB_k$. Pymoo cực tiểu:
-$$
+Đặt $`U=\sum_j\pi_j\max_kq_{kj}`$ và $`B_\Sigma=\sum_kB_k`$. Pymoo cực tiểu:
+
+```math
 F_1=1-P/U,\qquad F_2=E/B_\Sigma.
-$$
+```
 
 U bỏ qua pin/deadline nên chỉ là cận trên. Với instance hiện tại, U≈0,819126184 và B_Sigma=114 Wh. Đổi thang giữ nguyên Pareto dominance. Nếu chỉ chuẩn hóa cùng miền/hình học, P và U cùng chia cho m_Omega nên F_1 không đổi; đây không phải cải tiến tìm kiếm.
 
@@ -168,12 +174,13 @@ $py = 'D:\UAV-SAR\.venv\Scripts\python.exe'
 ### 5.1. Cá thể, fitness và khởi tạo
 
 Một cá thể là **kế hoạch cho cả K UAV**; genotype:
-$$
+
+```math
 Z=(s_1,\ldots,s_N,\ a_1,\ldots,a_N,\ o_1,\ldots,o_N)\in[0,1]^{3N}.
-$$
+```
 
 - Chọn ô j nếu s_j<0,5.
-- Phân công $k(j)=1+\min(\lfloor Ka_j\rfloor,K-1)$.
+- Phân công $`k(j)=1+\min(\lfloor Ka_j\rfloor,K-1)`$.
 - Duyệt theo o tăng dần; khóa bằng nhau giữ thứ tự chỉ số ban đầu.
 
 Với K=3, a thuộc [0;1/3), [1/3;2/3), [2/3;1] giao UAV 1, 2, 3. Instance có 768 gene. Công thức dùng chỉ số từ 1; Python/JSON dùng ID từ 0.
@@ -216,10 +223,11 @@ Mỗi cá thể được đánh giá đều cập nhật archive: gộp điểm 
 Trong không gian cực tiểu, p trội q nếu mọi F_m(p)≤F_m(q) và có ít nhất một mục tiêu nhỏ hơn. Lớp L_1 không bị trội; bỏ L_1 để tìm L_2 rồi tiếp tục. Rank nhỏ hơn tốt hơn.
 
 Trong mỗi lớp, crowding đo mức thưa quanh cá thể. Với M=2 mục tiêu, công thức tương ứng cách lấy trung bình của pymoo:
-$$
+
+```math
 CD(p)=\frac1M\sum_{m=1}^M
 \frac{F_m(p_m^+)-F_m(p_m^-)}{F_m^{max}-F_m^{min}}.
-$$
+```
 
 p_m^- và p_m^+ là hai hàng xóm theo mục tiêu m. Điểm biên được ưu tiên bằng crowding vô hạn trên mục tiêu không hằng; mục tiêu hằng đóng góp 0. Crowding lớn hơn giúp giữ phân bố nghiệm.
 
@@ -246,18 +254,20 @@ Hợp cha–con có 2mu cá thể; elitism giữ các nghiệm tốt theo lớp/
 ### 7.1. Trọng số và hàm phân rã
 
 Tạo mu vector trọng số:
-$$
+
+```math
 \lambda^{(i)}=\left(\frac{i}{\mu-1},1-\frac{i}{\mu-1}\right),
 \quad i=0,\ldots,\mu-1.
-$$
+```
 
 Mỗi vector là một mức ưu tiên của cùng kế hoạch toàn đội. (0,1) chỉ quan tâm năng lượng, (1,0) chỉ quan tâm xác suất trong hàm phân rã. Với mỗi vector, lấy 20 hàng xóm gần nhất theo Euclid trong **không gian trọng số**, bao gồm chính nó.
 
 Điểm lý tưởng z* giữ giá trị nhỏ nhất đã gặp của từng F_m; hai thành phần có thể đến từ hai cá thể khác nhau. Hàm Tchebycheff:
-$$
+
+```math
 g_i(Z)=\max_{m\in\{1,2\}}
 \left\{\lambda_m^{(i)}|F_m(Z)-z_m^*|\right\}.
-$$
+```
 
 g nhỏ hơn tốt hơn cho bài toán con i. Đây là cực đại khoảng cách có trọng số, không phải weighted sum. Bản cài hiện tại dùng điểm utopian bằng z* (epsilon=0), giữ các trọng số đầu mút bằng 0.
 
@@ -303,7 +313,7 @@ Cả bốn ô được chọn; thứ tự duyệt 3→2→4→1. Giải mã: UAV
 | 2 | 84,852814 | 13,485281 | 0,851878 |
 | 3 | 84,852814 | 12,071068 | 0,899577 |
 
-Mọi tuyến khả thi; $P=(0,4+0,2)q_1+0,3q_2+0,1q_3\approx72,3434\%$, E≈3,212341 Wh. Fitness≈(0,116822081; 0,028178430). Quan sát toàn miền vẫn có thể bỏ sót. Đây là minh họa, không phải nghiệm scenario 1.
+Mọi tuyến khả thi; $`P=(0,4+0,2)q_1+0,3q_2+0,1q_3\approx72,3434\%`$, E≈3,212341 Wh. Fitness≈(0,116822081; 0,028178430). Quan sát toàn miền vẫn có thể bỏ sót. Đây là minh họa, không phải nghiệm scenario 1.
 
 ## 9. Ví dụ và kết quả scenario 1 đã chạy
 
