@@ -7,7 +7,7 @@ from .io import read_json
 
 def main():
     parser = argparse.ArgumentParser(description="Multi-UAV SAR: POP + SAREnv, NSGA-II and MOEA/D")
-    parser.add_argument("command", choices=["download", "prepare", "train", "calibrate", "instance", "run", "pipeline", "diagnose"])
+    parser.add_argument("command", choices=["download", "prepare", "train", "calibrate", "instance", "run", "pipeline", "diagnose", "study"])
     parser.add_argument("--config", default="configs/pilot.json")
     parser.add_argument("--device", default="0", help="GPU index, or cpu")
     parser.add_argument("--epochs", type=int)
@@ -16,7 +16,9 @@ def main():
     parser.add_argument("--calibration", default="data/calibration.json")
     parser.add_argument("--instance", default="data/instance_mission.json")
     parser.add_argument("--output", help="Output file (calibrate/instance) or new directory (run/pipeline/diagnose)")
-    parser.add_argument("--algorithms", nargs="+", choices=["nsga2", "moead"], default=["nsga2", "moead"])
+    algorithms = ["nsga2", "moead", "mosa", "pils"] + [f"{base}_{variant}"
+                  for base in ("nsga2", "moead") for variant in ("route", "route_mutation", "route_crossover", "canonical")]
+    parser.add_argument("--algorithms", nargs="+", choices=algorithms, default=["nsga2", "moead"])
     parser.add_argument("--seeds", nargs="+", type=int)
     parser.add_argument("--population", type=int)
     parser.add_argument("--generations", type=int)
@@ -25,6 +27,8 @@ def main():
     parser.add_argument("--mutation-repeats", type=int, default=4, help="Independent PM trials per saved final individual")
     parser.add_argument("--probe-seed", type=int, default=2026)
     parser.add_argument("--skip-random", action="store_true", help="Skip the equal-evaluation stratified random-search control")
+    parser.add_argument("--study-config", default="configs/baseline-study.json")
+    parser.add_argument("--baseline-results", default="results/baseline_four_methods")
     args = parser.parse_args()
     config = read_json(args.config)
     # Set this before importing Ultralytics, including direct python invocations.
@@ -55,6 +59,10 @@ def main():
         from .diagnostics import diagnose
         diagnose(args.results, args.output or f"results/diagnostics_{time.strftime('%Y%m%d_%H%M%S')}",
                  args.extended_results, args.mutation_repeats, args.probe_seed, not args.skip_random)
+    elif args.command == "study":
+        from .study import run_study
+        run_study(config, args.study_config, args.baseline_results,
+                  args.output or f"results/study_{time.strftime('%Y%m%d_%H%M%S')}")
     else:
         from .datasets import fetch
         from .detector import prepare, train, calibrate

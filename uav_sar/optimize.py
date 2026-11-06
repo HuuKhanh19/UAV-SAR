@@ -102,6 +102,9 @@ class Progress(Callback):
 
 
 def run_one(instance, name, seed, settings, folder):
+    if name in ("mosa", "pils"):
+        from .local_search import run_direct
+        return run_direct(instance, name, seed, settings, folder)
     folder.mkdir(parents=True, exist_ok=False)
     problem = SearchProblem(instance)
     size = settings["population"]
@@ -110,9 +113,20 @@ def run_one(instance, name, seed, settings, folder):
     common = {"sampling": initial_population(instance, size, seed),
               "crossover": SBX(prob=.9, eta=settings["sbx_eta"]),
               "mutation": PM(prob=1.0, prob_var=1/(3*instance.n), eta=settings["mutation_eta"])}
-    if name == "nsga2":
+    base, _, variant = name.partition("_")
+    if variant:
+        from .route_operators import CanonicalPM, RouteCrossover, RouteMutation
+        if variant not in ("route", "route_mutation", "route_crossover", "canonical"):
+            raise ValueError(name)
+        if variant in ("route", "route_crossover"):
+            common["crossover"] = RouteCrossover()
+        if variant in ("route", "route_mutation"):
+            common["mutation"] = RouteMutation()
+        elif variant == "canonical":
+            common["mutation"] = CanonicalPM(prob=1., prob_var=1/(3*instance.n), eta=settings["mutation_eta"])
+    if base == "nsga2":
         algorithm = NSGA2(pop_size=size, eliminate_duplicates=False, **common)
-    elif name == "moead":
+    elif base == "moead":
         w = np.linspace(0, 1, size)
         algorithm = MOEAD(ref_dirs=np.column_stack([w, 1-w]), n_neighbors=min(size, max(2, settings["neighbors"])),
                           decomposition=Tchebicheff(), prob_neighbor_mating=settings["neighbor_mating"], **common)
@@ -130,13 +144,17 @@ def run_one(instance, name, seed, settings, folder):
         np.savez_compressed(folder / "final_population.npz", X=result.pop.get("X"), F=result.pop.get("F"))
     except KeyboardInterrupt:
         status, evaluations = "interrupted", problem.evaluations
+    search_elapsed = time.perf_counter()-progress.start
     write_front(problem, folder, label)
     stats = {"algorithm": name, "seed": seed, "status": status, "evaluations": evaluations,
              "elapsed_s": time.perf_counter()-progress.start, "archive_size": len(problem.archive_f),
              "hypervolume": float(progress.hv(problem.archive_f)) if len(problem.archive_f) else 0,
              "best_p_detect": float((1-problem.archive_f[:, 0].min())*instance.probability_upper_bound) if len(problem.archive_f) else 0,
              "decoded_feasible_fraction": 1.0 if evaluations else None,
-             "repair_fraction": problem.repaired/max(evaluations, 1), "settings": settings}
+             "repair_fraction": problem.repaired/max(evaluations, 1), "settings": settings,
+             "search_elapsed_s": search_elapsed,
+             "insertion_position_checks": getattr(algorithm.mating.mutation, "position_checks", 0),
+             "variation": variant or "sbx_pm"}
     write_json(folder / "summary.json", stats)
     print(f"[{label}] {status}: {folder}", flush=True)
     if status != "completed":
@@ -159,22 +177,24 @@ def compare(output, instance):
     metric = IGDPlus(reference)
     rows = []
     fig, (ax, curve) = plt.subplots(1, 2, figsize=(12, 4.5))
-    colors = {"nsga2": "tab:blue", "moead": "tab:orange"}
+    colors = {"nsga2": "tab:blue", "moead": "tab:orange", "mosa": "tab:green", "pils": "tab:red"}
     seen = set()
     for path, summary, f in records:
         summary["igd_plus_pooled_reference"] = float(metric(f))
         write_json(path, summary)
-        row = {k: v for k, v in summary.items() if k != "settings"}
+        row = {k: v for k, v in summary.items() if not isinstance(v, (dict, list))}
         rows.append(row)
         label = summary["algorithm"]
+        color = colors.get(label.split("_")[0], "gray")
         ax.scatter(f[:, 1]*instance.budget.sum(), (1-f[:, 0])*instance.probability_upper_bound, s=10,
-                   alpha=.5, c=colors[label], label=label if label not in seen else None)
+                   alpha=.5, c=color, label=label if label not in seen else None)
         history = np.genfromtxt(path.parent / "history.csv", delimiter=",", names=True)
         curve.plot(np.atleast_1d(history["evaluations"]), np.atleast_1d(history["hypervolume"]),
-                   c=colors[label], alpha=.6, label=label if label not in seen else None)
+                   c=color, alpha=.6, linestyle="--" if "_" in label else "-", label=label if label not in seen else None)
         seen.add(label)
     with (output / "summary.csv").open("w", newline="", encoding="utf-8") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+        fields = list(dict.fromkeys(key for row in rows for key in row))
+        writer = csv.DictWriter(stream, fieldnames=fields); writer.writeheader(); writer.writerows(rows)
     ax.set(xlabel="Full planned energy (Wh)", ylabel=instance.probability_label, title="Empirical archives, all seeds")
     curve.set(xlabel="Objective evaluations", ylabel="Normalized hypervolume", title="Convergence, all seeds")
     for a in (ax, curve):
@@ -201,7 +221,7 @@ def run(config, instance_path, output, algorithms, seeds=None, population=None, 
                 "instance_sha256": sha256(instance_path), "source_sha256": source_hashes,
                 "python": sys.version, "executable": sys.executable, "platform": platform.platform(), "pymoo": pymoo.__version__,
                 "normalization": {"probability_upper_bound": instance.probability_upper_bound, "energy_upper_bound_wh": float(instance.budget.sum())},
-                "archive": "all evaluated feasible phenotypes for both algorithms", "igd_reference": "pooled empirical archive, not true Pareto front"}
+                "archive": "all evaluated feasible phenotypes for every algorithm", "igd_reference": "pooled empirical archive, not true Pareto front"}
     write_json(output / "manifest.json", manifest)
     (output / "pip-freeze.txt").write_text(subprocess.check_output([sys.executable, "-m", "pip", "freeze"], text=True), encoding="utf-8")
     try:

@@ -82,3 +82,7 @@ Không kết luận hơn/kém từ lượt smoke test hoặc một seed. Cần t
 ## Chẩn đoán mở rộng trên scenario hiện tại
 
 Xem [baseline-diagnostics.md](baseline-diagnostics.md) và lệnh `run.py diagnose`. Phân tích dùng instance đã đóng băng, đối chiếu 20.000/100.000 đánh giá, đối chứng tìm kiếm ngẫu nhiên, đa dạng quần thể, đột biến PM và các phép thử 2-opt/chèn ô ngoại tuyến. So ngân sách phải tái lập phần lịch sử chung; không so trực tiếp IGD+ lấy từ hai tập tham chiếu gộp khác nhau. Các phép thử ngoại tuyến không được tính như thuật toán thắng baseline ở cùng ngân sách.
+
+## Bốn baseline và cơ chế hành trình
+
+[baseline-study-protocol.md](baseline-study-protocol.md) mở rộng bằng MOSA/Pareto ILS, ablation mutation/crossover/projection cho cả hai EA, và kiểm chứng tham số cố định trên scenario 2/3, miền rộng hơn và tài nguyên chặt hơn. Kết quả phải được đọc theo cùng instance và cùng ngân sách; các giá trị IGD+ trong lượt study dùng tập tham chiếu chung mới của từng instance.

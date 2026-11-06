@@ -1,0 +1,92 @@
+[
+  {
+    "algorithm": "nsga2",
+    "variant": "pm_canonical",
+    "mean_active_key_changes": 0.9904,
+    "membership_fraction": 0.0006000000000000001,
+    "reassignment_same_cells_fraction": 0.0005,
+    "order_only_fraction": 0.013600000000000001,
+    "plan_changed_fraction": 0.0147
+  },
+  {
+    "algorithm": "nsga2",
+    "variant": "pm_dummy_1x",
+    "mean_active_key_changes": 0.506,
+    "membership_fraction": 0.0082,
+    "reassignment_same_cells_fraction": 0.0019000000000000002,
+    "order_only_fraction": 0.0051,
+    "plan_changed_fraction": 0.0152
+  },
+  {
+    "algorithm": "nsga2",
+    "variant": "pm_dummy_3x",
+    "mean_active_key_changes": 0.24579999999999996,
+    "membership_fraction": 0.0042,
+    "reassignment_same_cells_fraction": 0.0005,
+    "order_only_fraction": 0.0027,
+    "plan_changed_fraction": 0.007400000000000001
+  },
+  {
+    "algorithm": "nsga2",
+    "variant": "pm_original",
+    "mean_active_key_changes": 0.9904,
+    "membership_fraction": 0.0156,
+    "reassignment_same_cells_fraction": 0.0018000000000000002,
+    "order_only_fraction": 0.0113,
+    "plan_changed_fraction": 0.028699999999999996
+  },
+  {
+    "algorithm": "nsga2",
+    "variant": "route_mutation",
+    "mean_active_key_changes": 768.0,
+    "membership_fraction": 0.42990000000000006,
+    "reassignment_same_cells_fraction": 0.22169999999999995,
+    "order_only_fraction": 0.3134,
+    "plan_changed_fraction": 0.9650000000000001
+  },
+  {
+    "algorithm": "moead",
+    "variant": "pm_canonical",
+    "mean_active_key_changes": 0.9904,
+    "membership_fraction": 0.0005,
+    "reassignment_same_cells_fraction": 0.0,
+    "order_only_fraction": 0.005299999999999999,
+    "plan_changed_fraction": 0.0058
+  },
+  {
+    "algorithm": "moead",
+    "variant": "pm_dummy_1x",
+    "mean_active_key_changes": 0.506,
+    "membership_fraction": 0.008400000000000001,
+    "reassignment_same_cells_fraction": 0.00030000000000000003,
+    "order_only_fraction": 0.0026000000000000003,
+    "plan_changed_fraction": 0.011300000000000001
+  },
+  {
+    "algorithm": "moead",
+    "variant": "pm_dummy_3x",
+    "mean_active_key_changes": 0.24579999999999996,
+    "membership_fraction": 0.0039,
+    "reassignment_same_cells_fraction": 0.0004,
+    "order_only_fraction": 0.001,
+    "plan_changed_fraction": 0.0053
+  },
+  {
+    "algorithm": "moead",
+    "variant": "pm_original",
+    "mean_active_key_changes": 0.9904,
+    "membership_fraction": 0.0161,
+    "reassignment_same_cells_fraction": 0.0008,
+    "order_only_fraction": 0.0053,
+    "plan_changed_fraction": 0.0222
+  },
+  {
+    "algorithm": "moead",
+    "variant": "route_mutation",
+    "mean_active_key_changes": 768.0,
+    "membership_fraction": 0.4593,
+    "reassignment_same_cells_fraction": 0.20060000000000003,
+    "order_only_fraction": 0.2973,
+    "plan_changed_fraction": 0.9571999999999999
+  }
+]

@@ -1,4 +1,4 @@
-# Multi-UAV SAR: NSGA-II và MOEA/D
+# Multi-UAV SAR: baseline và cơ chế tối ưu
 
 Baseline cho [bài toán](docs/baitoan.md): tối đa xác suất phát hiện một nạn nhân đứng yên **với điều kiện nạn nhân nằm trong miền nhiệm vụ**, tối thiểu năng lượng toàn kế hoạch; mỗi ô quan sát tối đa một lần, mọi UAV về căn cứ trong deadline và ngân sách pin. Tổng xác suất các ô trong miền bằng 1 (`condition_on_crop`).
 
@@ -7,6 +7,10 @@ Baseline cho [bài toán](docs/baitoan.md): tối đa xác suất phát hiện m
 Kết quả dùng miền nhiệm vụ 100% và tọa độ raster đã sửa: [báo cáo](docs/mission-results.md), [CSV](results/baseline_mission_100pct/summary.csv), [đồ thị](results/baseline_mission_100pct/comparison.png). Cấu hình: 2 baseline × 5 seed × 20.000 đánh giá, cùng detector POP 3 epoch.
 
 Kết quả pilot cũ dùng `preserve_mass` được giữ để đối chiếu tại [báo cáo cũ](docs/pilot-results.md); các xác suất của hai chế độ có ý nghĩa khác nhau.
+
+Đã bổ sung **MOSA và Pareto ILS**, cùng các biến thể EA dùng toán tử trên hành trình. [Giao thức bốn baseline và ablation](docs/baseline-study-protocol.md) mô tả thuật toán, ngân sách, đối chiếu thời gian và cách kiểm chứng trên scenario/seed khác. Các bản MOSA/PILS là thích nghi cho mô hình SAR này.
+
+[Kết quả nghiên cứu cơ chế](docs/baseline-study-results.md): 180 lượt/3,6 triệu đánh giá, ablation và kiểm chứng trên bốn trường hợp mới. [Thiết kế cơ chế](docs/route-mechanism-design.md) trình bày prototype đã kiểm chứng và hướng thích nghi theo cặp toán tử cần nghiên cứu tiếp.
 
 ## Chạy ngay từ terminal `(base)`
 
@@ -29,6 +33,12 @@ Mặc định chạy **NSGA-II và MOEA/D, 5 seed, population 100, 200 thế h�
 # Chỉ chạy một baseline; chọn seed và ngân sách.
 & $py -u run.py run --instance data/instance_mission.json --algorithms nsga2 --seeds 1 2 3
 & $py -u run.py run --instance data/instance_mission.json --algorithms moead --seeds 1 2 3
+
+# Bốn baseline, cùng 20.000 đánh giá/seed.
+& $py -u run.py run --instance artifacts/diagnostics_mission/instance.json --algorithms nsga2 moead mosa pils --seeds 1 2 3 4 5 --output results/baseline_four_methods
+
+# Ablation và kiểm chứng tham số cố định theo configs/baseline-study.json.
+& $py -u run.py study --baseline-results results/baseline_four_methods --output results/baseline_mechanism_study
 ```
 
 Mỗi lần chạy tạo thư mục mới trong `results/`; không ghi đè kết quả cũ. Terminal in `gen`, `eval`, `archive`, `Pmax`, `HV`, thời gian. `Pmax` là xác suất cao nhất trong archive, không phải giá trị của mọi nghiệm. Nghiệm có năng lượng nhỏ nhất là toàn đội nghỉ; xem toàn bộ Pareto để chọn phương án.
@@ -91,6 +101,8 @@ Khi so ngân sách, công cụ yêu cầu cùng instance, cặp thuật toán/se
 Đọc [chẩn đoán scenario hiện tại và hướng thí nghiệm tiếp theo](docs/baseline-diagnostics.md). **2-opt, chèn ô và greedy là phép thử ngoại tuyến có thêm tính toán**; kết quả của chúng giúp tìm điểm nghẽn, chưa chứng minh một thuật toán mới tốt hơn với cùng ngân sách.
 
 Trong mỗi thư mục chạy:
+
+Với MOSA/PILS, các dòng `generation` trong lịch sử là mốc ghi sau mỗi 100 đánh giá, không phải thế hệ EA; `final_population.npz` là snapshot archive, được ghi rõ trong summary. Các quyết định bị từ chối vì không khả thi vẫn tính vào ngân sách. Khi đọc các kết quả này, dùng báo cáo `study` thay cho phép chẩn đoán PM của riêng hai EA gốc.
 
 | File | Nội dung |
 | --- | --- |

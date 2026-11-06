@@ -1,0 +1,110 @@
+{
+  "status": "completed",
+  "protocol_sha256": "8282f9d8b53a75e3990653b83f158d777268417b9e02bc130e763dabd6234443",
+  "source_sha256": {
+    "D:\\UAV-SAR\\uav_sar\\__init__.py": "6e9a0033033e33632cc50fd13ac78379d821e345521f5279c3ce83b0e9f7e67c",
+    "D:\\UAV-SAR\\uav_sar\\cli.py": "1b94b8e2cac843011b51c39e38de7a22804dcf03f2e1da060b880d483c33ebdc",
+    "D:\\UAV-SAR\\uav_sar\\datasets.py": "170f0085155855d645816c79dd50e720e85f5da70c3674eb5195358175e9151b",
+    "D:\\UAV-SAR\\uav_sar\\detector.py": "7ca0110fcb6b5a14c9c4fa71767f17b5186c2ba23677cb3e741240706d6648d1",
+    "D:\\UAV-SAR\\uav_sar\\diagnostics.py": "238961493d500b26fa3aee550a8e231cf977c10b3843fcd97cfc0bb7c348017c",
+    "D:\\UAV-SAR\\uav_sar\\instance.py": "e99c3a9f84df12288d1bfc5fdb0a3865103b87be6776abb30274f6f03b0495ad",
+    "D:\\UAV-SAR\\uav_sar\\io.py": "ecbb7b3a3713c5408744897086ecdc05646ef4e0bb4f8cca7b22bff8a5b77e47",
+    "D:\\UAV-SAR\\uav_sar\\local_search.py": "b222f4a4a10cab42ad5cc69962843f2b7bd518c8f598c6fe039c823c0f1b005d",
+    "D:\\UAV-SAR\\uav_sar\\optimize.py": "c8d9d770756d44903b06c4999b212d16a8426b23e8ddc1a634b283c5d02bc500",
+    "D:\\UAV-SAR\\uav_sar\\problem.py": "939d65962f88645f63da536e88f41670a1f2ddc2995b57aacdf77b5d67e21dbf",
+    "D:\\UAV-SAR\\uav_sar\\route_operators.py": "3932b5ed88f3d1447a1baaa65a8c74ab0c59e4e77dd6f156f93cb1f6f2ae6a68",
+    "D:\\UAV-SAR\\uav_sar\\study.py": "4eae85f9623a4eebf53194fa611857517775a01f102c35fa565a5dbfd6c661a8",
+    "D:\\UAV-SAR\\uav_sar\\study_analysis.py": "d0afcab14b661865037085b9dc16bbc466c26efcdb00fb11e2007ca9129df7e6"
+  },
+  "baseline_results": "results\\baseline_four_methods",
+  "baseline_instance_sha256": "c677e8213f71ff713ced5c1da108991bb392dffa92d231bac9db434e78396ef8",
+  "normalization": "instance-derived; compare metrics within each instance",
+  "validation_policy": "No parameter changes after inspecting validation outcomes",
+  "cases": [
+    {
+      "name": "development",
+      "split": "development",
+      "instance": "results\\baseline_four_methods\\instance.json",
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "baseline_source": "results\\baseline_four_methods"
+    },
+    {
+      "name": "scenario_2",
+      "split": "validation",
+      "instance": "results\\baseline_mechanism_study\\inputs\\scenario_2.json",
+      "seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "specification": {
+        "name": "scenario_2",
+        "scenario": "2",
+        "crop_cells": 16,
+        "resource_factor": 1.0
+      }
+    },
+    {
+      "name": "scenario_3",
+      "split": "validation",
+      "instance": "results\\baseline_mechanism_study\\inputs\\scenario_3.json",
+      "seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "specification": {
+        "name": "scenario_3",
+        "scenario": "3",
+        "crop_cells": 16,
+        "resource_factor": 1.0
+      }
+    },
+    {
+      "name": "larger_domain",
+      "split": "validation",
+      "instance": "results\\baseline_mechanism_study\\inputs\\larger_domain.json",
+      "seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "specification": {
+        "name": "larger_domain",
+        "scenario": "1",
+        "crop_cells": 24,
+        "resource_factor": 1.0
+      }
+    },
+    {
+      "name": "tighter_resources",
+      "split": "validation",
+      "instance": "results\\baseline_mechanism_study\\inputs\\tighter_resources.json",
+      "seeds": [
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "specification": {
+        "name": "tighter_resources",
+        "scenario": "1",
+        "crop_cells": 16,
+        "resource_factor": 0.7
+      }
+    }
+  ]
+}

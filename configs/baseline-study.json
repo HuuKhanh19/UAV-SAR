@@ -1,0 +1,19 @@
+{
+  "status": "exploratory_mechanism_study_not_a_novelty_claim",
+  "evaluations_per_run": 20000,
+  "population": 100,
+  "development_seeds": [1, 2, 3, 4, 5],
+  "validation_seeds": [11, 12, 13, 14, 15],
+  "core_algorithms": ["nsga2", "moead", "mosa", "pils", "nsga2_route", "moead_route"],
+  "development_ablations": ["nsga2_route_mutation", "moead_route_mutation", "nsga2_route_crossover", "moead_route_crossover", "nsga2_canonical", "moead_canonical"],
+  "local_search": {"directions": 21, "temperature_start": 0.02, "temperature_end": 0.0002, "neighbors_per_operator": 8, "perturbation_moves": 5},
+  "validation_cases": [
+    {"name": "scenario_2", "scenario": "2", "crop_cells": 16, "resource_factor": 1.0},
+    {"name": "scenario_3", "scenario": "3", "crop_cells": 16, "resource_factor": 1.0},
+    {"name": "larger_domain", "scenario": "1", "crop_cells": 24, "resource_factor": 1.0},
+    {"name": "tighter_resources", "scenario": "1", "crop_cells": 16, "resource_factor": 0.7}
+  ],
+  "probe_seed": 2026,
+  "probe_repeats": 4,
+  "policy": "Freeze settings before validation. Same initial plans, evaluator, normalization and archive policy. Count infeasible proposals and internal position scans. Do not tune from validation outcomes."
+}

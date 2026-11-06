@@ -1,0 +1,33 @@
+{
+  "optimizer_actual": {
+    "population": 100,
+    "generations": 200,
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "neighbors": 20,
+    "neighbor_mating": 0.9,
+    "sbx_eta": 15,
+    "mutation_eta": 20,
+    "log_every": 10,
+    "hv_reference": [
+      1.1,
+      1.1
+    ],
+    "local_search": {
+      "directions": 21,
+      "temperature_start": 0.02,
+      "temperature_end": 0.0002,
+      "neighbors_per_operator": 8,
+      "perturbation_moves": 5
+    }
+  },
+  "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:09:58) [MSC v.1929 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "pymoo": "0.6.1.5",
+  "numpy": "2.2.6"
+}

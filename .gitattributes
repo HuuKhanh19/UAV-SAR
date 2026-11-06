@@ -1,0 +1,2 @@
+# Preserve exact snapshot bytes so published SHA-256 checks remain valid.
+artifacts/baseline_mechanism_study/** -text whitespace=cr-at-eol
